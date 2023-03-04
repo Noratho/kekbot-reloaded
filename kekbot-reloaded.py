@@ -20,7 +20,7 @@ eightball_answers = ["It is certain", "It is decidedly so", "Without a doubt", "
 
 globetrotters_name = ["Bandle City", "Bilgewater", "Frelijord", "Ionia", 
                     "Ixtal", "Noxus", "Piltover", "The Shadow Isles", 
-                    "Shurima", "Targon", "The Void", "Zuan", "Demacia"]
+                    "Shurima", "Targon", "The Void", "Zaun", "Demacia"]
 
 globetrotters_images = ["1yordles.png", "2bilgewater.png", "3frelijord.png", "4ionia.png", 
                     "5ixtal.png", "6noxus.png", "7piltover.png", "8shadow_isles.png", 
