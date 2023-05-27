@@ -17,10 +17,25 @@ eightball_answers = ["It is certain", "It is decidedly so", "Without a doubt", "
                 "Cannot predict now", "Concentrate and ask again", "Don’t count on it", "My reply is no", 
                 "My sources say no", "Outlook not so good", "Very doubtful"]
 
-
-globetrotters_name = ["Bandle City", "Bilgewater", "Frelijord", "Ionia", 
+globetrotters_display_names = ["Bandle City", "Bilgewater", "Frelijord", "Ionia", 
                     "Ixtal", "Noxus", "Piltover", "The Shadow Isles", 
                     "Shurima", "Targon", "The Void", "Zaun", "Demacia"]
+
+globetrotters_aliases = [
+                    ["bandle", "bandlecity", "yordle", "yordles", "5under5", "fiveunderfive", "5under5'"],
+                    ["bilgewater", "yarhar", "yarharhar", "allhandsondeck"],
+                    ["frelijord", "iceicebaby"],
+                    ["ionia", "ionian", "wuju", "everybodywaswujufighting"],
+                    ["ixtal", "elemental", "elementalmydearwatson", "elemental,mydearwatson"],
+                    ["noxus", "noxian", "strengthaboveall"],
+                    ["piltover", "hextech", "calculated"],
+                    ["theshadowisles", "shadowisles", "ruination", "harrowing", "spookyscaryskeletons"],
+                    ["shurima", "thesundiscneversets"],
+                    ["targon", "mounttargon", "peakperformance"],
+                    ["void", "thevoid", "inhumanscreechingsounds", "(inhumanscreechingsounds)"],
+                    ["zaun", "zaunite", "chemtech", "chemtechcomrades"],
+                    ["demacia", "demacian", "fordemacia"]
+                ]
 
 globetrotters_images = ["1yordles.png", "2bilgewater.png", "3frelijord.png", "4ionia.png", 
                     "5ixtal.png", "6noxus.png", "7piltover.png", "8shadow_isles.png", 
@@ -64,13 +79,30 @@ async def pick(ctx, *args):
     await ctx.send(response)
 
 
+
 @bot.command()
-async def globetrotters(ctx):
-    i = random.randrange(0, 12)
+async def globetrotters(ctx, *args):
+    
+    # default roll
+    if (len(args) == 0 or args[0] == "roll"):
+        i = random.randrange(0, 12)
+        await ctx.send(globetrotters_display_names[i])
+        await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+        
+    # manual pick
+    else:
+        name = ''.join(args).lower();
+        found = False;
+    
+        for i in range(len(globetrotters_aliases)):
+            if (name in globetrotters_aliases[i]):
+                await ctx.send(globetrotters_display_names[i])
+                await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+                found = True
 
-    await ctx.send(globetrotters_name[i])
-    await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
-
+        if (not found):
+            await ctx.send("No such area exists")
+    
 
 @bot.command(name='numberfrom')
 async def numberbetween(ctx, *args):
