@@ -92,6 +92,7 @@ async def test_giveuserID(ctx):
     await ctx.send(ctx.author.id);
 
 
+# TODO: split off globetrotters subfunctions into separate methods for readability
 @bot.command()
 async def globetrotters(ctx, *args):
 
@@ -152,7 +153,7 @@ async def globetrotters(ctx, *args):
                 with open(globetrotters_file, "w") as read_file:
                     json.dump(globetrotters_members, read_file);
                 
-                await ctx.send("Congrats! You now have " + str(globetrotters_members[authorid][i]) + " wins with " + globetrotters_display_names[i] + ".")
+                await ctx.send("Congrats! You now have " + str(globetrotters_members[authorid][i]) + (" wins with " if count != 1 else " win with ") + globetrotters_display_names[i] + ".")
                 return
 
         # if nothing found...
@@ -189,7 +190,7 @@ async def globetrotters(ctx, *args):
                 return
 
         # if nothing found...
-        await ctx.send("No such area exists. Usage: ``~globetrotters set [region name] [wins]``")
+        await ctx.send("No such region exists. Usage: ``~globetrotters set [region name] [wins]``")
 
 
     # shows collated stats for all or one region
@@ -215,7 +216,7 @@ async def globetrotters(ctx, *args):
                     return
 
             # if nothing found...
-            await ctx.send("No such region exists")
+            await ctx.send("No such region exists.")
 
     
     # manual pick
@@ -229,7 +230,7 @@ async def globetrotters(ctx, *args):
                 return
 
         # if nothing found...
-        await ctx.send("No such region exists")
+        await ctx.send("No such region exists.")
     
 
 @bot.command(name='numberfrom')
