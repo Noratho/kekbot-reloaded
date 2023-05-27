@@ -134,7 +134,7 @@ async def globetrotters(ctx, *args):
                 return
 
         # if nothing found...
-        await ctx.send("No such area exists. Usage: ~globetrotters add [region name]")
+        await ctx.send("No such region exists. Usage: ~globetrotters add [region name]")
         
 
     # set a win count for a region
@@ -170,21 +170,30 @@ async def globetrotters(ctx, *args):
         await ctx.send("No such area exists. Usage: ~globetrotters set [region name] [wins]")
 
 
-    # shows collated stats for all or one region [TODO]
+    # shows collated stats for all or one region
     elif (args[0] == "stats"):
 
-        # dummy text
-        await ctx.send("Coming soon™")
-        return
-    
-        argslist.pop(0);
-
+        message = "**Globetrotters Records for " + ctx.author.displayname + "**\n"
+        
         if (len(argslist) == 0):
-            return
+            for i in range(len(globetrotters_aliases)):
+                count = globetrotters_members[authorid][i]
+                message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + ("wins" if count != 0 else "win") + "\n"
+            await ctx.send(message)
 
         else:
-            name = ''.join(args).lower();
-            found = False;
+            argslist.pop(0);
+            name = ''.join(argslist).lower();
+
+            for i in range(len(globetrotters_aliases)):
+            if (name in globetrotters_aliases[i]):
+                count = globetrotters_members[authorid][i]
+                message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + ("wins" if count != 0 else "win")
+                await ctx.send(message)
+                return
+
+            # if nothing found...
+            await ctx.send("No such region exists")
 
     
     # manual pick
@@ -198,7 +207,7 @@ async def globetrotters(ctx, *args):
                 return
 
         # if nothing found...
-        await ctx.send("No such area exists")
+        await ctx.send("No such region exists")
     
 
 @bot.command(name='numberfrom')
