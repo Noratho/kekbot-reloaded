@@ -84,24 +84,98 @@ async def pick(ctx, *args):
 async def globetrotters(ctx, *args):
     
     # default roll
-    if (len(args) == 0 or args[0] == "roll"):
+    if (len(args) == 0 or args == ["roll"]):
         i = random.randrange(0, 12)
         await ctx.send(globetrotters_display_names[i])
         await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+
+
+    # add a win to a region [TODO]
+    elif (args[0] == "add" or args[0] == "addto"):
+
+        # dummy text
+        await ctx.send("Coming soon™")
+        return
+    
+        if (len(args) < 2):
+            await ctx.send("Missing arguments. Usage: ~globetrotters add [region name]")
+            return
+
+        # get name
+        args.pop(0);
+        name = ''.join(args).lower();
+
+        # get wins
+        for i in range(len(globetrotters_aliases)):
+            if (name in globetrotters_aliases[i]):
+                # add a win
+                return
+
+        # if nothing found...
+        await ctx.send("No such area exists. Usage: ~globetrotters add [region name]")
         
+
+    # set a win count for a region [TODO]
+    elif (args[0] == "set"):
+
+        # dummy text
+        await ctx.send("Coming soon™")
+        return
+        
+        if (len(args) < 3):
+            await ctx.send("Missing arguments. Usage: ~globetrotters set [region name] [wins]")
+            return
+        
+        count = args[len(args)-1]
+        if (not count.isdigit()):
+            await ctx.send("Can't set your win count to a non-integer. Usage: ~globetrotters set [region] [wins]")
+            return
+        count = int(count)
+
+        # get name
+        args.pop(0);
+        args.pop(len(args)-1)
+        name = ''.join(args).lower();
+
+        # get wins
+        for i in range(len(globetrotters_aliases)):
+            if (name in globetrotters_aliases[i]):
+                # set the wins
+                return
+
+        # if nothing found...
+        await ctx.send("No such area exists. Usage: ~globetrotters set [region name] [wins]")
+
+
+    # shows collated stats for all or one region [TODO]
+    elif (args[0] == "stats"):
+
+        # dummy text
+        await ctx.send("Coming soon™")
+        return
+    
+        args.pop(0);
+
+        if (len(args) == 0):
+            return
+
+        else:
+            name = ''.join(args).lower();
+            found = False;
+
+    
     # manual pick
     else:
         name = ''.join(args).lower();
-        found = False;
-    
+        
         for i in range(len(globetrotters_aliases)):
             if (name in globetrotters_aliases[i]):
                 await ctx.send(globetrotters_display_names[i])
                 await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
-                found = True
+                return
 
-        if (not found):
-            await ctx.send("No such area exists")
+        # if nothing found...
+        await ctx.send("No such area exists")
     
 
 @bot.command(name='numberfrom')
