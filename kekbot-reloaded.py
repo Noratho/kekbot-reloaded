@@ -1,4 +1,5 @@
 
+import json
 import discord
 import os
 import random
@@ -16,6 +17,14 @@ eightball_answers = ["It is certain", "It is decidedly so", "Without a doubt", "
                 "Signs point to yes", "Reply hazy, try again", "Ask again later", "Better not tell you now",
                 "Cannot predict now", "Concentrate and ask again", "Don’t count on it", "My reply is no", 
                 "My sources say no", "Outlook not so good", "Very doubtful"]
+
+
+globetrotters_file = 'data/globetrotters.json'
+if os.path.isfile(globetrotters_file):
+    with open(globetrotters_file, "r") as read_file:
+        globetrotters_members = json.load(read_file)
+else:
+    globetrotters_members = {}
 
 globetrotters_display_names = ["Bandle City", "Bilgewater", "Frelijord", "Ionia", 
                     "Ixtal", "Noxus", "Piltover", "The Shadow Isles", 
@@ -78,10 +87,22 @@ async def pick(ctx, *args):
     response = random.choice(choices.split(","))
     await ctx.send(response)
 
+@bot.command()
+async def test_giveuserID(ctx):
+    await ctx.send(ctx.author.id);
 
 
 @bot.command()
 async def globetrotters(ctx, *args):
+
+    # set up user info
+    authorid = str(ctx.author.id)
+    if (authorid not in globetrotters_members.keys()):
+        globetrotters_members[authorid] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    argslist = [];
+    for a in args:
+        argslist.append(a)
     
     # default roll
     if (len(args) == 0 or args == ["roll"]):
@@ -90,37 +111,34 @@ async def globetrotters(ctx, *args):
         await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
 
 
-    # add a win to a region [TODO]
+    # add a win to a region
     elif (args[0] == "add" or args[0] == "addto"):
-
-        # dummy text
-        await ctx.send("Coming soon™")
-        return
     
         if (len(args) < 2):
             await ctx.send("Missing arguments. Usage: ~globetrotters add [region name]")
             return
 
         # get name
-        args.pop(0);
-        name = ''.join(args).lower();
+        argslist.pop(0);
+        name = ''.join(argslist).lower();
 
-        # get wins
+        # add a win
         for i in range(len(globetrotters_aliases)):
             if (name in globetrotters_aliases[i]):
-                # add a win
+                globetrotters_members[authorid][i] = globetrotters_members[authorid][i] + 1
+
+                with open(globetrotters_file, "w") as read_file:
+                    json.dump(globetrotters_members, read_file);
+                
+                await ctx.send("Congrats! You now have " + str(globetrotters_members[authorid][i]) + " wins with " + globetrotters_display_names[i] + ".")
                 return
 
         # if nothing found...
         await ctx.send("No such area exists. Usage: ~globetrotters add [region name]")
         
 
-    # set a win count for a region [TODO]
+    # set a win count for a region
     elif (args[0] == "set"):
-
-        # dummy text
-        await ctx.send("Coming soon™")
-        return
         
         if (len(args) < 3):
             await ctx.send("Missing arguments. Usage: ~globetrotters set [region name] [wins]")
@@ -133,14 +151,19 @@ async def globetrotters(ctx, *args):
         count = int(count)
 
         # get name
-        args.pop(0);
-        args.pop(len(args)-1)
-        name = ''.join(args).lower();
+        argslist.pop(0);
+        argslist.pop(len(argslist)-1)
+        name = ''.join(argslist).lower();
 
         # get wins
         for i in range(len(globetrotters_aliases)):
             if (name in globetrotters_aliases[i]):
-                # set the wins
+                globetrotters_members[authorid][i] = count
+
+                with open(globetrotters_file, "w") as read_file:
+                    json.dump(globetrotters_members, read_file);
+                
+                await ctx.send("Set " + globetrotters_display_names[i] + " wins to " + str(globetrotters_members[authorid][i]) + ".")
                 return
 
         # if nothing found...
@@ -154,9 +177,9 @@ async def globetrotters(ctx, *args):
         await ctx.send("Coming soon™")
         return
     
-        args.pop(0);
+        argslist.pop(0);
 
-        if (len(args) == 0):
+        if (len(argslist) == 0):
             return
 
         else:
