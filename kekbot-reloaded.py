@@ -43,7 +43,7 @@ globetrotters_aliases = [
                     ["targon", "mounttargon", "peakperformance"],
                     ["void", "thevoid", "inhumanscreechingsounds", "(inhumanscreechingsounds)"],
                     ["zaun", "zaunite", "chemtech", "chemtechcomrades"],
-                    ["demacia", "demacian", "fordemacia"]
+                    ["demacia", "demacian", "fordemacia", "fordemacia!"]
                 ]
 
 globetrotters_images = ["1yordles.png", "2bilgewater.png", "3frelijord.png", "4ionia.png", 
@@ -54,6 +54,11 @@ globetrotters_images = ["1yordles.png", "2bilgewater.png", "3frelijord.png", "4i
 
 bot = commands.Bot(command_prefix='~', intents=defIntents)
 
+def generate_argslist(args):
+    argslist = [];
+    for a in args:
+        argslist.append(a)
+    return argslist
 
 async def failed_command(ctx):
     await ctx.send(file=discord.File('minijdjoker.png'))
@@ -101,137 +106,160 @@ async def globetrotters(ctx, *args):
     if (authorid not in globetrotters_members.keys()):
         globetrotters_members[authorid] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    argslist = [];
-    for a in args:
-        argslist.append(a)
-
-    
     # default roll
     if (len(args) == 0 or (len(args) == 1 and args[0] == "roll")):
-        i = random.randrange(0, 12)
-        await ctx.send(globetrotters_display_names[i])
-        await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
-
+        await globetrotters_roll(ctx)
 
     # filtered roll
     elif (args[0] == "roll"):
-        maxwins = args[1]
-        if (not maxwins.isdigit()):
-            await ctx.send("Can't use a non-integer to filter rolls. Usage: ``~globetrotters roll [maxwins]``")
-            return
-        maxwins = int(maxwins)
-
-        filteredindices = []
-        for i in range(len(globetrotters_aliases)):
-            if (globetrotters_members[authorid][i] <= maxwins):
-                filteredindices.append(i)
-        if (len(filteredindices) <= 0):
-            await ctx.send("Maximum win count is too low. Use ``~globetrotters stats`` to check your current win counts.")
-            return
-            
-        i = filteredindices[random.randrange(0, len(filteredindices))]
-        await ctx.send(globetrotters_display_names[i])
-        await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
-
+        await globetrotters_filtered_roll(ctx, args)
 
     # add a win to a region
     elif (args[0] == "add" or args[0] == "addwin"):
-    
-        if (len(args) < 2):
-            await ctx.send("Missing arguments. Usage: ``~globetrotters add [region name]``")
-            return
-
-        # get name
-        argslist.pop(0);
-        name = ''.join(argslist).lower();
-
-        # add a win
-        for i in range(len(globetrotters_aliases)):
-            if (name in globetrotters_aliases[i]):
-                globetrotters_members[authorid][i] = globetrotters_members[authorid][i] + 1
-
-                with open(globetrotters_file, "w") as read_file:
-                    json.dump(globetrotters_members, read_file);
-                
-                await ctx.send("Congrats! You now have " + str(globetrotters_members[authorid][i]) + (" wins with " if count != 1 else " win with ") + globetrotters_display_names[i] + ".")
-                return
-
-        # if nothing found...
-        await ctx.send("No such region exists. Usage: ``~globetrotters add [region name]``")
-        
+        await globetrotters_add_win(ctx, args)
 
     # set a win count for a region
     elif (args[0] == "set" or args[0] == "setwins"):
-        
-        if (len(args) < 3):
-            await ctx.send("Missing arguments. Usage: ``~globetrotters set [region name] [wins]``")
-            return
-        
-        count = args[len(args)-1]
-        if (not count.isdigit()):
-            await ctx.send("Can't set your win count to a non-integer. Usage: ``~globetrotters set [region] [wins]``")
-            return
-        count = int(count)
-
-        # get name
-        argslist.pop(0);
-        argslist.pop(len(argslist)-1)
-        name = ''.join(argslist).lower();
-
-        # get wins
-        for i in range(len(globetrotters_aliases)):
-            if (name in globetrotters_aliases[i]):
-                globetrotters_members[authorid][i] = count
-
-                with open(globetrotters_file, "w") as read_file:
-                    json.dump(globetrotters_members, read_file);
-                
-                await ctx.send("Set " + globetrotters_display_names[i] + " wins to " + str(globetrotters_members[authorid][i]) + ".")
-                return
-
-        # if nothing found...
-        await ctx.send("No such region exists. Usage: ``~globetrotters set [region name] [wins]``")
-
+        await globetrotters_set_wins(ctx, args)
 
     # shows collated stats for all or one region
     elif (args[0] == "stats"):
-
-        message = "**Globetrotters Records for " + ctx.author.display_name + "**\n"
+        await globetrotters_show_stats(ctx, args)
         
-        if (len(args) == 1):
-            for i in range(len(globetrotters_aliases)):
-                count = globetrotters_members[authorid][i]
-                message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + (" wins" if count != 1 else " win") + "\n"
-            await ctx.send(message)
-
-        else:
-            argslist.pop(0);
-            name = ''.join(argslist).lower();
-
-            for i in range(len(globetrotters_aliases)):
-                if (name in globetrotters_aliases[i]):
-                    count = globetrotters_members[authorid][i]
-                    message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + (" wins" if count != 1 else " win")
-                    await ctx.send(message)
-                    return
-
-            # if nothing found...
-            await ctx.send("No such region exists.")
-
-    
     # manual pick
     else:
-        name = ''.join(args).lower();
+        await globetrotters_show_region(ctx, args)
+
+
+async def globetrotters_roll(ctx):
+    i = random.randrange(0, 12)
+    await ctx.send(globetrotters_display_names[i])
+    await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+
+
+async def globetrotters_filtered_roll(ctx, args):
+    maxwins = args[1]
+    if (not maxwins.isdigit()):
+        await ctx.send("Can't use a non-integer to filter rolls. Usage: ``~globetrotters roll [maxwins]``")
+        return
+    maxwins = int(maxwins)
+
+    authorid = str(ctx.author.id)
+
+    filteredindices = []
+    for i in range(len(globetrotters_aliases)):
+        if (globetrotters_members[authorid][i] <= maxwins):
+            filteredindices.append(i)
+    if (len(filteredindices) <= 0):
+        await ctx.send("Maximum win count is too low. Use ``~globetrotters stats`` to check your current win counts.")
+        return
         
+    i = filteredindices[random.randrange(0, len(filteredindices))]
+    await ctx.send(globetrotters_display_names[i])
+    await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+
+
+async def globetrotters_add_win(ctx, args):
+    if (len(args) < 2):
+        await ctx.send("Missing arguments. Usage: ``~globetrotters add [region name]``")
+        return
+
+    authorid = str(ctx.author.id)
+    
+    # get name
+    argslist = generate_argslist(args)
+    argslist.pop(0);
+    name = ''.join(argslist).lower();
+
+    # add a win
+    for i in range(len(globetrotters_aliases)):
+        if (name in globetrotters_aliases[i]):
+            count = globetrotters_members[authorid][i] + 1
+            globetrotters_members[authorid][i] = count
+            
+            with open(globetrotters_file, "w") as read_file:
+                json.dump(globetrotters_members, read_file);
+            
+            await ctx.send("Congrats! You now have " + str(globetrotters_members[authorid][i]) + (" wins with " if count != 1 else " win with ") + globetrotters_display_names[i] + ".")
+            return
+
+    # if nothing found...
+    await ctx.send("No such region exists. Usage: ``~globetrotters add [region name]``")
+
+
+async def globetrotters_set_wins(ctx, args):
+    if (len(args) < 3):
+        await ctx.send("Missing arguments. Usage: ``~globetrotters set [region name] [wins]``")
+        return
+    
+    count = args[len(args)-1]
+    if (not count.isdigit()):
+        await ctx.send("Can't set your win count to a non-integer. Usage: ``~globetrotters set [region] [wins]``")
+        return
+    count = int(count)
+
+    authorid = str(ctx.author.id)
+
+    # get name
+    argslist = generate_argslist(args)
+    argslist.pop(0);
+    argslist.pop(len(argslist)-1)
+    name = ''.join(argslist).lower();
+
+    # get wins
+    for i in range(len(globetrotters_aliases)):
+        if (name in globetrotters_aliases[i]):
+            globetrotters_members[authorid][i] = count
+
+            with open(globetrotters_file, "w") as read_file:
+                json.dump(globetrotters_members, read_file);
+            
+            await ctx.send("Set " + globetrotters_display_names[i] + " wins to " + str(globetrotters_members[authorid][i]) + ".")
+            return
+
+    # if nothing found...
+    await ctx.send("No such region exists. Usage: ``~globetrotters set [region name] [wins]``")
+
+
+async def globetrotters_show_stats(ctx, args):
+    authorid = str(ctx.author.id)
+    
+    message = "**Globetrotters Records for " + ctx.author.display_name + "**\n"
+    
+    if (len(args) == 1):
+        for i in range(len(globetrotters_aliases)):
+            count = globetrotters_members[authorid][i]
+            message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + (" wins" if count != 1 else " win") + "\n"
+        await ctx.send(message)
+
+    else:
+        argslist = generate_argslist(args)
+        argslist.pop(0);
+        name = ''.join(argslist).lower();
+
         for i in range(len(globetrotters_aliases)):
             if (name in globetrotters_aliases[i]):
-                await ctx.send(globetrotters_display_names[i])
-                await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+                count = globetrotters_members[authorid][i]
+                message = message + "*" + globetrotters_display_names[i] + ":* " + str(count) + (" wins" if count != 1 else " win")
+                await ctx.send(message)
                 return
 
         # if nothing found...
         await ctx.send("No such region exists.")
+
+
+async def globetrotters_show_region(ctx, args):
+    name = ''.join(args).lower();
     
+    for i in range(len(globetrotters_aliases)):
+        if (name in globetrotters_aliases[i]):
+            await ctx.send(globetrotters_display_names[i])
+            await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+            return
+
+    # if nothing found...
+    await ctx.send("No such region exists.")
+
 
 @bot.command(name='numberfrom')
 async def numberbetween(ctx, *args):
