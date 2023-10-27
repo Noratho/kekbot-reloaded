@@ -33,14 +33,14 @@ globetrotters_display_names = ["Bandle City", "Bilgewater", "Frelijord", "Ionia"
 globetrotters_aliases = [
                     ["bandle", "bandlecity", "yordle", "yordles", "5under5", "fiveunderfive", "5under5'"],
                     ["bilgewater", "yarhar", "yarharhar", "allhandsondeck"],
-                    ["frelijord", "iceicebaby"],
+                    ["frelijord", "frelijordian", "iceicebaby"],
                     ["ionia", "ionian", "wuju", "everybodywaswujufighting"],
-                    ["ixtal", "elemental", "elementalmydearwatson", "elemental,mydearwatson"],
+                    ["ixtal", "ixtali" "elemental", "elementalmydearwatson", "elemental,mydearwatson"],
                     ["noxus", "noxian", "strengthaboveall"],
-                    ["piltover", "hextech", "calculated"],
+                    ["piltover", "piltovan", "hextech", "calculated"],
                     ["theshadowisles", "shadowisles", "ruination", "harrowing", "spookyscaryskeletons"],
-                    ["shurima", "thesundiscneversets"],
-                    ["targon", "mounttargon", "peakperformance"],
+                    ["shurima", "shuriman", "thesundiscneversets"],
+                    ["targon", "mounttargon", "targonian", "peakperformance"],
                     ["void", "thevoid", "inhumanscreechingsounds", "(inhumanscreechingsounds)"],
                     ["zaun", "zaunite", "chemtech", "chemtechcomrades"],
                     ["demacia", "demacian", "fordemacia", "fordemacia!"]
@@ -101,7 +101,7 @@ async def roll(ctx, *args):
         try:
             die = int(s)
         except:
-            await ctx.send("Usage: ~roll d#")
+            await ctx.send("Usage: ``~roll d#``")
             return;
         
         result = 1 + int(die*random.random())
@@ -287,7 +287,7 @@ async def globetrotters_show_region(ctx, args):
 @bot.command(name='numberfrom')
 async def numberbetween(ctx, *args):
     if (not args[0].isdigit() or not args[1].isdigit()):
-        await ctx.send(file=discord.File('minijdjoker.png'))
+        await ctx.send(file=discord.File('images/minijdjoker.png'))
         return
 
     num1 = int(args[0])
@@ -295,7 +295,7 @@ async def numberbetween(ctx, *args):
     # print(num1, num2)
     if num1 >= num2:
         # failed_command(ctx)
-        await ctx.send(file=discord.File('minijdjoker.png'))
+        await ctx.send(file=discord.File('images/minijdjoker.png'))
         return
 
     i = random.randrange(num1, num2)
