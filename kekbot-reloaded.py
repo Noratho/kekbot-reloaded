@@ -85,6 +85,29 @@ async def eightball(ctx):
     response = random.choice(eightball_answers) 
     await ctx.send(response)
 
+@bot.command(name='roll')
+async def roll(ctx, *args):
+    if (len(args) == 0):
+        await ctx.send("Usage: ~roll d#")
+        return
+
+    response = "Result:"
+    
+    for s in args:
+        
+        if (len(s) > 1 and (s[0] == 'd' or s[0] == 'D')):
+            s = s[1:]
+
+        try:
+            die = int(s)
+        except:
+            await ctx.send("Usage: ~roll d#")
+            return;
+        
+        result = 1 + int(die*random.random())
+        response += " " + str(result);
+    
+    await ctx.send(response);
 
 @bot.command()
 async def pick(ctx, *args):
