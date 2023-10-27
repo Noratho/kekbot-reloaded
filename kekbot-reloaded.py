@@ -61,7 +61,7 @@ def generate_argslist(args):
     return argslist
 
 async def failed_command(ctx):
-    await ctx.send(file=discord.File('minijdjoker.png'))
+    await ctx.send(file=discord.File('images/minijdjoker.png'))
 
 
 @bot.event
@@ -77,7 +77,7 @@ async def on_message(message):
     await bot.process_commands(message)
     if "major" in message.content.lower() and str(message.author) != botname:
         await message.channel.send("I don't have a major.")
-        await message.channel.send(file=discord.File('jdjoker.png'))
+        await message.channel.send(file=discord.File('images/jdjoker.png'))
         return
 
 @bot.command(name='8ball')
@@ -157,7 +157,7 @@ async def globetrotters(ctx, *args):
 async def globetrotters_roll(ctx):
     i = random.randrange(0, 12)
     await ctx.send(globetrotters_display_names[i])
-    await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+    await ctx.send(file=discord.File("images/globetrotter/" +globetrotters_images[i]))
 
 
 async def globetrotters_filtered_roll(ctx, args):
@@ -179,7 +179,7 @@ async def globetrotters_filtered_roll(ctx, args):
         
     i = filteredindices[random.randrange(0, len(filteredindices))]
     await ctx.send(globetrotters_display_names[i])
-    await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+    await ctx.send(file=discord.File("images/globetrotter/" +globetrotters_images[i]))
 
 
 async def globetrotters_add_win(ctx, args):
@@ -277,7 +277,7 @@ async def globetrotters_show_region(ctx, args):
     for i in range(len(globetrotters_aliases)):
         if (name in globetrotters_aliases[i]):
             await ctx.send(globetrotters_display_names[i])
-            await ctx.send(file=discord.File("globetrotter_images/" +globetrotters_images[i]))
+            await ctx.send(file=discord.File("images/globetrotter/" +globetrotters_images[i]))
             return
 
     # if nothing found...
