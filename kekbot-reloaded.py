@@ -88,26 +88,52 @@ async def eightball(ctx):
 @bot.command(name='roll')
 async def roll(ctx, *args):
     if (len(args) == 0):
-        await ctx.send("Usage: ~roll d#")
+        await ctx.send("Usage: ~roll d# [+/-#]")
         return
 
-    response = "Result:"
+    results = []
+    can_do_modifier = False;
+    running_modifier = False;
+    
     
     for s in args:
         
         if (len(s) > 1 and (s[0] == 'd' or s[0] == 'D')):
             s = s[1:]
-
-        try:
-            die = int(s)
-        except:
-            await ctx.send("Usage: ``~roll d#``")
-            return;
+        elif (len(s) > 1 and (s[0] == '+' or s[0] == '-')):
+            running_modifier = True;
         
-        result = 1 + int(die*random.random())
-        response += " " + str(result);
+        if not running_modifier:
+            try:
+                die = int(s)
+            except:
+                await ctx.send("Usage: ``~roll d# [+/-#]``")
+                return;
+            if die < 1:
+                await ctx.send("Error: die size must be positive\nUsage: ``~roll d# [+/-#]``")
+                return;
+            results.append(1 + int(die*random.random()))
+            can_do_modifier = True
+        
+        else:
+            if not can_do_modifier:
+                await ctx.send("Error: modifier must be preceded by die\nUsage: ``~roll d# [+/-#]``")
+                return
+            try:
+                mod = int(s)
+            except:
+                await ctx.send("Usage: ``~roll d# [+/-#]``")
+                return
+            results[len(results)-1] += mod
+            can_do_modifier = False
+            running_modifier = False
+
+
+    response = ctx.author.nick + "'s result:"
+    for i in results:
+        response += " " + str(i)
     
-    await ctx.send(response);
+    await ctx.send(response)
 
 @bot.command()
 async def pick(ctx, *args):
