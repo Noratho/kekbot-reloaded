@@ -129,7 +129,7 @@ async def roll(ctx, *args):
             running_modifier = False
 
 
-    response = ctx.author.nick + "'s result:"
+    response = ctx.author.display_name + "'s result:"
     for i in results:
         response += " " + str(i)
     
