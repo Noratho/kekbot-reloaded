@@ -1,2 +1,4 @@
 .env
 data/globetrotters.json
+/__pycache__
+/venv

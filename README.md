@@ -7,3 +7,14 @@ This bot Has:
 - A function that picks from one of the regions of League of Legends as well as displays the champions from that region. This is for the Globetrotters acheivement.
 - Tracking for the Globetrotters acheivement.
 - And some small easter eggs
+
+# Setup:
+
+Create a venv using: 
+`python3 -m venv venv `
+
+Activate:
+`source venv/bin/activate`
+
+Get requirements:
+`pip install -r requirements. txt`
