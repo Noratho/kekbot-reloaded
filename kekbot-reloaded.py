@@ -10,19 +10,20 @@ from discord.ext import commands
 globetrotters_members = globetrotters.load_data()
 
 load_dotenv()
-  
+
 defIntents = discord.Intents.default()
 defIntents.message_content = True
-token = os.getenv('TOKEN')
+token = os.getenv('KEKBOT_TOKEN')
 
-eightball_answers = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", 
-                "You may rely on it", "As I see it, yes", "Most likely", "Outlook good", "Yes",
-                "Signs point to yes", "Reply hazy, try again", "Ask again later", "Better not tell you now",
-                "Cannot predict now", "Concentrate and ask again", "Don’t count on it", "My reply is no", 
-                "My sources say no", "Outlook not so good", "Very doubtful"]
+eightball_answers = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely",
+                     "You may rely on it", "As I see it, yes", "Most likely", "Outlook good", "Yes",
+                     "Signs point to yes", "Reply hazy, try again", "Ask again later", "Better not tell you now",
+                     "Cannot predict now", "Concentrate and ask again", "Don’t count on it", "My reply is no",
+                     "My sources say no", "Outlook not so good", "Very doubtful"]
 
 
 bot = commands.Bot(command_prefix='~', intents=defIntents)
+
 
 async def failed_command(ctx):
     await ctx.send(file=discord.File('images/minijdjoker.png'))
@@ -43,11 +44,16 @@ async def on_message(message):
         await message.channel.send("I don't have a major.")
         await message.channel.send(file=discord.File('images/jdjoker.png'))
         return
+    if "yo can someone send that one video" in message.content.lower() and str(message.author) != botname:
+        await message.channel.send(file=discord.File('videos/bart.mp4'))
+        return
+
 
 @bot.command(name='8ball')
 async def eightball(ctx):
-    response = random.choice(eightball_answers) 
+    response = random.choice(eightball_answers)
     await ctx.send(response)
+
 
 @bot.command(name='roll')
 async def roll(ctx, *args):
@@ -56,29 +62,28 @@ async def roll(ctx, *args):
         return
 
     results = []
-    can_do_modifier = False;
-    running_modifier = False;
-    
-    
+    can_do_modifier = False
+    running_modifier = False
+
     for s in args:
-        
+
         if (len(s) > 1 and (s[0] == 'd' or s[0] == 'D')):
             s = s[1:]
         elif (len(s) > 1 and (s[0] == '+' or s[0] == '-')):
-            running_modifier = True;
-        
+            running_modifier = True
+
         if not running_modifier:
             try:
                 die = int(s)
             except:
                 await ctx.send("Usage: ``~roll d# [+/-#]``")
-                return;
+                return
             if die < 1:
                 await ctx.send("Error: die size must be positive\nUsage: ``~roll d# [+/-#]``")
-                return;
+                return
             results.append(1 + int(die*random.random()))
             can_do_modifier = True
-        
+
         else:
             if not can_do_modifier:
                 await ctx.send("Error: modifier must be preceded by die\nUsage: ``~roll d# [+/-#]``")
@@ -92,12 +97,12 @@ async def roll(ctx, *args):
             can_do_modifier = False
             running_modifier = False
 
-
     response = ctx.author.display_name + "'s result:"
     for i in results:
         response += " " + str(i)
-    
+
     await ctx.send(response)
+
 
 @bot.command()
 async def pick(ctx, *args):
@@ -105,9 +110,10 @@ async def pick(ctx, *args):
     response = random.choice(choices.split(","))
     await ctx.send(response)
 
+
 @bot.command()
 async def test_giveuserID(ctx):
-    await ctx.send(ctx.author.id);
+    await ctx.send(ctx.author.id)
 
 
 # TODO: split off globetrotters subfunctions into separate methods for readability
@@ -117,7 +123,8 @@ async def globetrotters_split(ctx, *args):
     # set up user info
     authorid = str(ctx.author.id)
     if (authorid not in globetrotters_members.keys()):
-        globetrotters_members[authorid] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        globetrotters_members[authorid] = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     # default roll
     if (len(args) == 0 or (len(args) == 1 and args[0] == "roll")):
@@ -138,7 +145,7 @@ async def globetrotters_split(ctx, *args):
     # shows collated stats for all or one region
     elif (args[0] == "stats"):
         await globetrotters.show_stats(ctx, args)
-        
+
     # manual pick
     else:
         await globetrotters.show_region(ctx, args)
@@ -163,11 +170,3 @@ async def numberbetween(ctx, *args):
 
 
 bot.run(token)
-
-
-
-
-
-
-
-
